@@ -1,15 +1,13 @@
 clear all
 clc
 
-
 %% Prepare paths and regexp
 
-chemin={'/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/raw'}
+chemin={'/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/raw'};
 
-suj = get_subdir_regex(chemin,'Temoin02_V1_S1'); %to get all subdir that start with 2
+suj = get_subdir_regex(chemin,'Temoin'); %to get all subdir that start with 2
 %to see the content
 char(suj)
-
 
 %functional and anatomic subdir
 par.dfonc_reg='PA$';
@@ -20,7 +18,8 @@ par.danat_reg='t1mpr';
 par.anat_file_reg  = '^s.*nii'; %le nom generique du volume pour l'anat
 par.file_reg  = '^f.*nii'; %le nom generique du volume pour les fonctionel
 
-par.run=1;par.display=0; 
+par.display=0; 
+par.run=1;
 
 
 %% Segment anat
@@ -31,12 +30,12 @@ fanat = get_subdir_regex_files(anat,par.anat_file_reg,1)
 
 par.GM   = [1 0 1 0]; % Unmodulated / modulated / native_space dartel / import
 par.WM   = [1 0 1 0]; 
-j = job_do_segment(fanat,par)
+j_segment = job_do_segment(fanat,par)
 
 %apply normalize on anat
 fy = get_subdir_regex_files(anat,'^y',1)
 fanat = get_subdir_regex_files(anat,'^ms',1)
-j=job_apply_normalize(fy,fanat,par)
+j_apply_normalise=job_apply_normalize(fy,fanat,par)
 
 
 %% Brain extract
@@ -61,14 +60,14 @@ anat = get_subdir_regex_one(suj,par.danat_reg) %should be no warning
 
 %realign and reslice
 par.file_reg = '^f.*nii'; par.type = 'estimate_and_reslice';
-j = job_realign(dfonc,par)
+j_realign_reslice = job_realign(dfonc,par)
 
 %realign and reslice opposite phase
 par.file_reg = '^f.*nii'; par.type = 'estimate_and_reslice';
-j = job_realign(dfonc_op,par)
+j_realign_reslice_op = job_realign(dfonc_op,par)
 
 %topup and unwarp
-par.file_reg = {'^rf.*nii'}; 
+par.file_reg = {'^rf.*nii'}; par.sge=0;
 do_topup_unwarp_4D(dfoncall,par)
 
 %coregister mean fonc on brain_anat
@@ -80,19 +79,16 @@ for nbs=1:length(suj)
 end
 
 fo = get_subdir_regex_files(dfonc,'^utrf.*nii',1)
-j=job_coregister(fmean,fanat,fo,par)
+j_coregister=job_coregister(fmean,fanat,fo,par)
 
 %apply normalize
 fy = get_subdir_regex_files(anat,'^y',1)
-j=job_apply_normalize(fy,fo,par)
+j_apply_normalize=job_apply_normalize(fy,fo,par)
 
 %smooth the data
 ffonc = get_subdir_regex_files(dfonc,'^wutrf')
 par.smooth = [8 8 8];
-j=job_smooth(ffonc,par);
-
-
-return
+j_smooth=job_smooth(ffonc,par)
 
 
 %% Prepare first level
@@ -108,18 +104,24 @@ stimdir = get_subdir_regex(stimpath,subdir);
 fons = get_subdir_regex_files(stimdir,'MRI_[12]_SPM.mat$',2);
 char(fons)
 
-par.file_reg = '^wutrf';
+par.TR = 1.520;
+par.file_reg = '^swutrf';
 
 
 %% fMRI design specification
 
-j = job_first_level12(dfonc,st,fons,par)
+par.run=1;
+par.display=0;
+j_fmri_desing = job_first_level12(dfonc,st,fons,par)
 
 
 %% Estime design
 
 fspm = get_subdir_regex_files(st,'SPM',1)
-j = job_first_level12_estimate(fspm)
+
+par.run=1;
+par.display=0;
+j_estimate_model = job_first_level12_estimate(fspm,par)
 
 
 %% Prepare contrasts
@@ -162,5 +164,5 @@ par.delete_previous=1;
 
 %% Generate contrasts
 
-j = job_first_level12_contrast_rep(fspm,contrast,par)
+j_contrast = job_first_level12_contrast_rep(fspm,contrast,par)
 
