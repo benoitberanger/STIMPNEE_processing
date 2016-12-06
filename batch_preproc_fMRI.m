@@ -18,7 +18,7 @@ par.danat_reg='t1mpr';
 par.anat_file_reg  = '^s.*nii'; %le nom generique du volume pour l'anat
 par.file_reg  = '^f.*nii'; %le nom generique du volume pour les fonctionel
 
-par.display=0; 
+par.display=0;
 par.run=1;
 
 
@@ -29,7 +29,7 @@ anat = get_subdir_regex(suj,par.danat_reg)
 fanat = get_subdir_regex_files(anat,par.anat_file_reg,1)
 
 par.GM   = [1 0 1 0]; % Unmodulated / modulated / native_space dartel / import
-par.WM   = [1 0 1 0]; 
+par.WM   = [1 0 1 0];
 j_segment = job_do_segment(fanat,par)
 
 %apply normalize on anat

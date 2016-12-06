@@ -180,6 +180,26 @@ par.delete_previous=0;
 par.run=1;
 
 
-%%
+%% Write contrasts
 
 job_first_level12_contrast(fspm,contrast,par)
+
+
+%% Prepare display
+
+show{1}.spm.stats.results.spmmat = fspm;
+show{1}.spm.stats.results.conspec.titlestr = '';
+show{1}.spm.stats.results.conspec.contrasts = 9;
+show{1}.spm.stats.results.conspec.threshdesc = 'none'; % 'none' 'FWE' 'FDR'
+show{1}.spm.stats.results.conspec.thresh = 0.05;
+show{1}.spm.stats.results.conspec.extent = 0;
+show{1}.spm.stats.results.conspec.conjunction = 1;
+show{1}.spm.stats.results.conspec.mask.none = 1;
+show{1}.spm.stats.results.units = 1;
+show{1}.spm.stats.results.print = 'ps';
+show{1}.spm.stats.results.write.none = 1;
+
+
+%% Display
+
+spm_jobman('run', show );

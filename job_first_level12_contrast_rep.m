@@ -28,7 +28,7 @@ for nbs = 1:length(fspm)
     
     for nbc = 1:length(contrast.names)
         switch contrast.types{nbc}
-            case 'T'        
+            case 'T'
                 jobs{nbs}.spm.stats.con.consess{nbc}.tcon.name = contrast.names{nbc};
                 jobs{nbs}.spm.stats.con.consess{nbc}.tcon.weights = contrast.values{nbc};
                 jobs{nbs}.spm.stats.con.consess{nbc}.tcon.sessrep = 'repl';
@@ -37,7 +37,7 @@ for nbs = 1:length(fspm)
                 jobs{nbs}.spm.stats.con.consess{nbc}.fcon.name = contrast.names{nbc};
                 jobs{nbs}.spm.stats.con.consess{nbc}.fcon.weights = contrast.values{nbc};
                 jobs{nbs}.spm.stats.con.consess{nbc}.fcon.sessrep = 'repl';
-
+                
         end
     end
     
