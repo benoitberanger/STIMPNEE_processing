@@ -8,7 +8,7 @@ clc
 
 designdir = get_subdir_regex(pwd,'Analyse_2ndlevel','ANOVA_Factorial')
 
-subjectpath = {[pwd filesep 'STIMPNEE_4D_processing']}
+subjectpath = {[pwd filesep 'img']}
 
 myContrasts = {
     'Positive Effect Null' % 1
@@ -67,10 +67,10 @@ lvl_21 = [];
 lvl_22 = [];
 
 for s = 1 : size(myScans)
-   
+    
     lvl  = cell2mat( myScans(s,[2 3]) );
     
-    current_subjectpath = get_subdir_regex(subjectpath,myScans{s,1},'stat','modelBloc');
+    current_subjectpath = get_subdir_regex(subjectpath,myScans{s,1},'stat','fMRI');
     
     current_contrastfile = get_subdir_regex_files(current_subjectpath,'con_0009.nii');
     
@@ -86,10 +86,10 @@ for s = 1 : size(myScans)
     
 end
 
-char(lvl_11)
-char(lvl_12)
-char(lvl_21)
-char(lvl_22)
+char(lvl_11), size(lvl_11)
+char(lvl_12), size(lvl_12)
+char(lvl_21), size(lvl_21)
+char(lvl_22), size(lvl_22)
 
 
 %% Fill the 2nd lvl design job
@@ -139,7 +139,8 @@ spm('defaults', 'FMRI');
 
 %% Prepare the job for estimation
 
-
+do_delete(designdir)
+mkdir(designdir{1})
 spm_jobman('run', job1);
 
 
