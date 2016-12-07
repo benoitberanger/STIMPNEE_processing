@@ -57,6 +57,10 @@ myScans = {
 'Temoin07_V5_S1'  2           2
 'Temoin07_V1_S2'  1           1
 'Temoin07_V5_S2'  1           2
+'Temoin08_V1_S1'  1           1
+'Temoin08_V5_S1'  1           2
+'Temoin08_V1_S2'  2           1
+'Temoin08_V5_S2'  2           2
 
 };
 
@@ -166,8 +170,12 @@ spm_jobman('run', job2);
 contrast.names = {
     'P2_J5 > P1_J5';
     'P2_J1 > P1_J1';
-    'P2_J5 - P2_J1';
+    'P2_J5 - P2_J1'; % <--- img
     'P2_J1 - P2_J5';
+    'P1_J5 > P2_J5';
+    'P1_J1 > P2_J1';
+    'P1_J5 - P1_J1'; % <--- img
+    'P1_J1 - P1_J5';
     }';
 
 contrast.values = {
@@ -175,6 +183,11 @@ contrast.values = {
     [-1 0 1 0]
     [0 0 -1 1]
     [0 0 1 -1]
+    
+    [-1 0 1 0]
+    [0 -1 0 1]
+    [-1 1 0 0]
+    [1 -1 0 0]
     }';
 
 contrast.types = cat(1,repmat({'T'},[1 length(contrast.names)]));

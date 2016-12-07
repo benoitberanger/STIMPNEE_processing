@@ -45,6 +45,8 @@ myScans = {
 'Temoin06_V5_S2'  22.4
 'Temoin07_V5_S1'  50.8
 'Temoin07_V5_S2'  34.2
+% 'Temoin08_V5_S1'  x
+% 'Temoin08_V5_S2'  x
 
 };
 
