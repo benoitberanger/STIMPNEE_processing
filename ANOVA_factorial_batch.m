@@ -6,9 +6,11 @@ clc
 
 %% Parameters
 
-designdir = get_subdir_regex(pwd,'Analyse_2ndlevel','ANOVA_Factorial')
+maindir = '/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE';
 
-subjectpath = {[pwd filesep 'img']}
+designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_Factorial')
+
+imagepath = get_subdir_regex(maindir,'img')
 
 myContrasts = {
     'Positive Effect Null' % 1
@@ -70,9 +72,9 @@ for s = 1 : size(myScans)
     
     lvl  = cell2mat( myScans(s,[2 3]) );
     
-    current_subjectpath = get_subdir_regex(subjectpath,myScans{s,1},'stat','fMRI');
+    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat','fMRI');
     
-    current_contrastfile = get_subdir_regex_files(current_subjectpath,'con_0009.nii');
+    current_contrastfile = get_subdir_regex_files(current_imagepath,'con_0009.nii');
     
     if isequal(lvl, [1 1])
         lvl_11 = [ lvl_11 current_contrastfile ];

@@ -6,9 +6,11 @@ clc
 
 %% Parameters
 
-designdir = get_subdir_regex(pwd,'Analyse_2ndlevel','Regression')
+maindir = '/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE';
 
-imgpath = {[pwd filesep 'img']}
+designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','Regression')
+
+imagepath = get_subdir_regex(maindir,'img')
 
 myContrasts = {
     'Positive Effect Null' % 1
@@ -46,10 +48,10 @@ myScans = {
 
 };
 
-subjectpath = get_subdir_regex(imgpath,myScans(:,1),'stat','fMRI');
-char(subjectpath), size(subjectpath)
+contrastpath = get_subdir_regex(imagepath,myScans(:,1),'stat','fMRI');
+char(contrastpath), size(contrastpath)
 
-contrastfile = get_subdir_regex_files(subjectpath,'con_0009.nii');
+contrastfile = get_subdir_regex_files(contrastpath,'con_0009.nii');
 char(contrastfile), size(contrastfile)
 
 

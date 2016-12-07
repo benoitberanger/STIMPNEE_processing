@@ -3,7 +3,7 @@ clc
 
 %% Prepare paths and regexp
 
-chemin={'/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/img'};
+chemin='/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/img';
 
 suj = get_subdir_regex(chemin,'Temoin'); %to get all subdir that start with 2
 %to see the content
