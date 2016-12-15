@@ -50,7 +50,7 @@ end
 
 for b = 1 : size(block,1) - 1
     
-    block{b,3} = trapz( signal( block{b,2} : block{b+1,2} ) )*1/60;
+    block{b,3} = trapz( signal( block{b,2} : block{b+1,2}-1 ) )*1/60;
 
 end
 
