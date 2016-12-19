@@ -4,8 +4,37 @@ fclose('all');
 
 filename = '/export/dataCENIR/dicom/nifti_raw/PRISMA_STIMPNEE/2016_05_13_STIMPNEE_Temoin01_V5_S2/S07_MBep2d_diff_175iso_B2k_d60/dic_param_f66_S07_MBep2d_diff_175iso_B2k_d60.json';
 
+time_new_method_function = 1;
 time_new_method = 1;
 time_json = 0;
+
+
+%% In a function
+
+if time_new_method_function 
+    fprintf('\n\n *** In a function *** \n\n')
+    tic
+    
+    field_to_get={
+        'SeriesNumber'
+        'CsaSeries.MrPhoenixProtocol.sSliceArray.asSlice\[0\].dInPlaneRot'
+        'InPlanePhaseEncodingDirection'
+        'CsaImage.PhaseEncodingDirectionPositive'
+        'CsaImage.BandwidthPerPixelPhaseEncode'
+        };
+    
+    field_type={
+        'double'
+        'double'
+        'char'
+        'double'
+        'double'
+    };
+    [ out ] = get_string_from_json( filename , field_to_get , field_type );
+    out{:}
+    
+    toc
+end
 
 
 %% New method : low-levl I/O
@@ -34,7 +63,7 @@ if time_new_method
     token = regexp(content,'"CsaImage.PhaseEncodingDirectionPositive": (\w+),','tokens');
     PhaseEncodingDirectionPositive = str2double( token{:} )
     
-    token = regexp(content,'"CsaImage.BandwidthPerPixelPhaseEncode": (([-e.]|\d+)+),','tokens');
+    token = regexp(content,'"CsaImage.BandwidthPerPixelPhaseEncode": (([-e.]|\d)+),','tokens');
     BandwidthPerPixelPhaseEncode = str2double( token{:} )
     
     toc
