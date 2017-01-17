@@ -5,7 +5,8 @@ clc
 
 chemin='/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/img';
 
-suj = get_subdir_regex(chemin,'Temoin'); %to get all subdir that start with 2
+% suj = get_subdir_regex(chemin,'Temoin');
+suj = get_subdir_regex(chemin);
 %to see the content
 char(suj)
 
@@ -20,6 +21,14 @@ par.file_reg  = '^f.*nii'; %le nom generique du volume pour les fonctionel
 
 par.display=0;
 par.run=1;
+
+
+%% Get files paths
+
+dfonc = get_subdir_regex_multi(suj,par.dfonc_reg)
+dfonc_op = get_subdir_regex_multi(suj,par.dfonc_reg_oposit_phase)
+dfoncall = get_subdir_regex_multi(suj,{par.dfonc_reg,par.dfonc_reg_oposit_phase })
+anat = get_subdir_regex_one(suj,par.danat_reg) %should be no warning
 
 
 %% Segment anat
@@ -46,14 +55,6 @@ do_fsl_add(ff,fo)
 fm=get_subdir_regex_files(anat,'^mask_b',1); fanat=get_subdir_regex_files(anat,'^s.*nii',1);
 fo = addprefixtofilenames(fanat,'brain_');
 do_fsl_mult(concat_cell(fm,fanat),fo);
-
-
-%% Get files paths
-
-dfonc = get_subdir_regex_multi(suj,par.dfonc_reg)
-dfonc_op = get_subdir_regex_multi(suj,par.dfonc_reg_oposit_phase)
-dfoncall = get_subdir_regex_multi(suj,{par.dfonc_reg,par.dfonc_reg_oposit_phase })
-anat = get_subdir_regex_one(suj,par.danat_reg) %should be no warning
 
 
 %% Preprocess fMRI runs

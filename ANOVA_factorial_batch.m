@@ -145,7 +145,7 @@ spm('defaults', 'FMRI');
 
 %% Prepare the job for estimation
 
-do_delete(designdir)
+do_delete(designdir,1)
 mkdir(designdir{1})
 spm_jobman('run', job1);
 

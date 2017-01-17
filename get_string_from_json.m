@@ -33,7 +33,7 @@ if fid == -1
     error('file cannot be opened : %s',filename)
 end
 content = fread(fid, '*char')'; % read the whole file as a single char
-fclose('all');
+fclose(fid);
 
 
 %% Extract tokens
@@ -53,7 +53,7 @@ for o = 1 : length(field_to_get)
         case { 'char' , 'string' , 'str' }
             token = regexp(content, [ '"' field_to_get{o} '": "(\w+)",' ],'tokens');
             if ~isempty(token)
-                out{o} = token{:};
+                out{o} = token{:}{:};
             else
                 out{o} = [];
             end
