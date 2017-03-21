@@ -191,7 +191,7 @@ contrast.values = {
     }';
 
 contrast.types = cat(1,repmat({'T'},[1 length(contrast.names)]));
-par.delete_previous=0;
+par.delete_previous=1;
 par.run=1;
 
 
@@ -204,7 +204,7 @@ job_first_level12_contrast(fspm,contrast,par)
 
 show{1}.spm.stats.results.spmmat = fspm;
 show{1}.spm.stats.results.conspec.titlestr = '';
-show{1}.spm.stats.results.conspec.contrasts = 9;
+show{1}.spm.stats.results.conspec.contrasts = 3;
 show{1}.spm.stats.results.conspec.threshdesc = 'none'; % 'none' 'FWE' 'FDR'
 show{1}.spm.stats.results.conspec.thresh = 0.05;
 show{1}.spm.stats.results.conspec.extent = 10;

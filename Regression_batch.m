@@ -108,8 +108,8 @@ spm('defaults', 'FMRI');
 
 %% Prepare the job for estimation
 
-do_delete(designdir_P1)
-do_delete(designdir_P2)
+do_delete(designdir_P1,0)
+do_delete(designdir_P2,0)
 mkdir(designdir_P1{1})
 mkdir(designdir_P2{1})
 spm_jobman('run', job1);
@@ -147,7 +147,7 @@ contrast.values = {
     }';
 
 contrast.types = cat(1,repmat({'T'},[1 length(contrast.names)]));
-par.delete_previous=0;
+par.delete_previous=1;
 par.run=1;
 
 
