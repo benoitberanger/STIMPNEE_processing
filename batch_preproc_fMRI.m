@@ -5,8 +5,8 @@ clc
 
 chemin='/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/img';
 
-% suj = get_subdir_regex(chemin,'Temoin');
-suj = get_subdir_regex(chemin);
+suj = get_subdir_regex(chemin,'Temoin');
+% suj = get_subdir_regex(chemin);
 %to see the content
 char(suj)
 
@@ -88,7 +88,7 @@ j_apply_normalize=job_apply_normalize(fy,fo,par)
 
 %smooth the data
 ffonc = get_subdir_regex_files(dfonc,'^wutrf')
-par.smooth = [8 8 8];
+par.smooth = [5 5 5];
 j_smooth=job_smooth(ffonc,par)
 
 
@@ -110,6 +110,8 @@ par.file_reg = '^swutrf';
 
 
 %% fMRI design specification
+
+par.rp = 1; % realignment paramters : movement regressors
 
 par.run=1;
 par.display=0;
