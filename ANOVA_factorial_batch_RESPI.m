@@ -6,9 +6,9 @@ clc
 
 %% Parameters
 
-maindir = '/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE';
+maindir = pwd;
 
-designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_Factorial')
+designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_Factorial_FORCE')
 
 imagepath = get_subdir_regex(maindir,'img')
 
@@ -33,34 +33,66 @@ myScans = {
     
 % fmri exam       'procedure' 'time'
 
-'Temoin02_V1_S1'  1           1
-'Temoin02_V5_S1'  1           2
-'Temoin02_V1_S2'  2           1
-'Temoin02_V5_S2'  2           2
-'Temoin03_V1_S1'  2           1
-'Temoin03_V5_S1'  2           2
-'Temoin03_V1_S2'  1           1
-'Temoin03_V5_S2'  1           2
+% 'Temoin02_V1_S1'  1           1
+% 'Temoin02_V5_S1'  1           2
+% 'Temoin02_V1_S2'  2           1
+% 'Temoin02_V5_S2'  2           2
+% 'Temoin03_V1_S1'  2           1
+% 'Temoin03_V5_S1'  2           2
+% 'Temoin03_V1_S2'  1           1
+% 'Temoin03_V5_S2'  1           2
 'Temoin04_V1_S1'  2           1
 'Temoin04_V5_S1'  2           2
 'Temoin04_V1_S2'  1           1
 'Temoin04_V5_S2'  1           2
-'Temoin05_V1_S1'  2           1
-'Temoin05_V5_S1'  2           2
-'Temoin05_V1_S2'  1           1
-'Temoin05_V5_S2'  1           2
+% 'Temoin05_V1_S1'  2           1
+% 'Temoin05_V5_S1'  2           2
+% 'Temoin05_V1_S2'  1           1
+% 'Temoin05_V5_S2'  1           2
 'Temoin06_V1_S1'  1           1
 'Temoin06_V5_S1'  1           2
 'Temoin06_V1_S2'  2           1
 'Temoin06_V5_S2'  2           2
-'Temoin07_V1_S1'  2           1
-'Temoin07_V5_S1'  2           2
-'Temoin07_V1_S2'  1           1
-'Temoin07_V5_S2'  1           2
+% 'Temoin07_V1_S1'  2           1
+% 'Temoin07_V5_S1'  2           2
+% 'Temoin07_V1_S2'  1           1
+% 'Temoin07_V5_S2'  1           2
 'Temoin08_V1_S1'  1           1
 'Temoin08_V5_S1'  1           2
 'Temoin08_V1_S2'  2           1
 'Temoin08_V5_S2'  2           2
+'Temoin09_V1_S2'  2           1
+'Temoin09_V5_S2'  2           2
+'Temoin10_V1_S2'  1           1
+'Temoin10_V5_S2'  1           2
+'Temoin11_V1_S1'  2           1
+'Temoin11_V5_S1'  2           2
+'Temoin12_V1_S1'  1           1
+'Temoin12_V5_S1'  1           2
+'Temoin13_V1_S1'  2           1
+'Temoin13_V5_S1'  2           2
+'Temoin12_V1_S2'  2           1
+'Temoin12_V5_S2'  2           2
+'Temoin11_V1_S2'  1           1
+'Temoin11_V5_S2'  1           2
+'Temoin13_V1_S2'  1           1
+'Temoin13_V5_S2'  1           2
+'Temoin14_V1_S1'  2           1
+'Temoin14_V5_S1'  2           2
+'Temoin15_V1_S1'  1           1
+'Temoin15_V5_S1'  1           2
+'Temoin16_V1_S1'  1           1
+'Temoin16_V5_S1'  1           2
+'Temoin17_V1_S1'  2           1
+'Temoin17_V5_S1'  2           2
+'Temoin15_V1_S2'  2           1
+'Temoin15_V5_S2'  2           2
+'Temoin14_V1_S2'  1           1
+'Temoin14_V5_S2'  1           2
+'Temoin16_V1_S2'  2           1
+'Temoin16_V5_S2'  2           2
+'Temoin17_V1_S2'  1           1
+'Temoin17_V5_S2'  1           2
 
 };
 
@@ -78,7 +110,7 @@ for s = 1 : size(myScans)
     
     current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat','fMRI');
     
-    current_contrastfile = get_subdir_regex_files(current_imagepath,'con_0009.nii');
+    current_contrastfile = get_subdir_regex_files(current_imagepath,'con_0011.nii');
     
     if isequal(lvl, [1 1])
         lvl_11 = [ lvl_11 current_contrastfile ];
@@ -165,6 +197,8 @@ job2{1}.spm.stats.fmri_est.method.Classical = 1;
 spm_jobman('run', job2);
 
 
+return
+
 %% Contraste
 
 contrast.names = {
@@ -197,7 +231,7 @@ par.run=1;
 
 %% Write contrasts
 
-job_first_level12_contrast(fspm,contrast,par)
+job_first_level_contrast(fspm,contrast,par)
 
 
 %% Prepare display

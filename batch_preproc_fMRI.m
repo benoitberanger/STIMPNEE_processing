@@ -1,12 +1,12 @@
-clear all
+clear
 clc
 
 %% Prepare paths and regexp
 
-chemin='/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/img';
+chemin=[ pwd filesep 'img' ];
 
 suj = get_subdir_regex(chemin,'Temoin');
-% suj = get_subdir_regex(chemin);
+suj(22) = [];
 %to see the content
 char(suj)
 
@@ -50,7 +50,7 @@ j_apply_normalise=job_apply_normalize(fy,fanat,par)
 %% Brain extract
 
 ff=get_subdir_regex_files(anat,'^c[123]',3);
-fo=addsufixtofilenames(anat,'/mask_brain');
+fo=addsuffixtofilenames(anat,'/mask_brain');
 do_fsl_add(ff,fo)
 fm=get_subdir_regex_files(anat,'^mask_b',1); fanat=get_subdir_regex_files(anat,'^s.*nii',1);
 fo = addprefixtofilenames(fanat,'brain_');
@@ -101,7 +101,7 @@ st =r_mkdir(sta,'fMRI')
 
 [~, subdir] = get_parent_path(suj,1)
 
-stimpath = '/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE/stim';
+stimpath = [ pwd filesep 'stim' ];;
 stimdir = get_subdir_regex(stimpath,subdir);
 
 fons = get_subdir_regex_files(stimdir,'MRI_[12]_SPM.mat$',2);
@@ -117,7 +117,7 @@ par.rp = 1; % realignment paramters : movement regressors
 
 par.run=1;
 par.display=0;
-j_fmri_desing = job_first_level12(dfonc,st,fons,par)
+j_fmri_desing = job_first_level_specify(dfonc,st,fons,par)
 
 
 %% Estime design
@@ -126,7 +126,7 @@ fspm = get_subdir_regex_files(st,'SPM',1)
 
 par.run=1;
 par.display=0;
-j_estimate_model = job_first_level12_estimate(fspm,par)
+j_estimate_model = job_first_level_estimate(fspm,par)
 
 
 %% Prepare contrasts
@@ -169,5 +169,6 @@ par.delete_previous=1;
 
 %% Generate contrasts
 
-j_contrast = job_first_level12_contrast_rep(fspm,contrast,par)
+par.sessrep = 'repl';
+j_contrast = job_first_level_contrast(fspm,contrast,par)
 

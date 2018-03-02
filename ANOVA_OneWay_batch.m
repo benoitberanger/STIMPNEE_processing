@@ -6,11 +6,11 @@ clc
 
 %% Parameters
 
-maindir = '/media/benoit/DATADRIVE1/fMRI_data_benoit/STIMPNEE';
+maindir = pwd;
 
 designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_OneWay')
 
-imagepath = get_subdir_regex(maindir,'img','_V1_S1')
+imagepath = get_subdir_regex(maindir,'img','(_V1_S1)|(_V5_S1)')
 char(imagepath)
 
 myContrasts = {
@@ -32,17 +32,18 @@ myContrasts = {
 contrastpath = get_subdir_regex(imagepath,'stat','fMRI');
 char(contrastpath), size(contrastpath)
 
-contrastfile = cell(length(myContrasts),1);
-for c = 1 : length(myContrasts)
-    
-    con = sprintf('con_%.4d.nii',c)
-    
-    contrastfile{c} = get_subdir_regex_files(contrastpath,con);
-    
-end
+% contrastfile = cell(length(myContrasts),1);
+% for c = 1 : length(myContrasts)
+%     
+%     con = sprintf('con_%.4d.nii',c)
+%     
+%     contrastfile{c} = get_subdir_regex_files(contrastpath,con);
+%     
+% end
 
-% contrastfile = get_subdir_regex_files(contrastpath,'con_0009.nii');
-% char(contrastfile), size(contrastfile)
+contrastfile{1} = get_subdir_regex_files(contrastpath,'con_0010.nii');
+contrastfile{2} = get_subdir_regex_files(contrastpath,'con_0011.nii');
+char(contrastfile), size(contrastfile)
 
 
 
