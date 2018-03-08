@@ -1,6 +1,8 @@
 clear
 clc
 
+use_pct = 1; % Parallel Computing Toolbox
+
 %% Prepare paths and regexp
 
 % chemin=[ pwd filesep 'img' ];
@@ -23,7 +25,7 @@ main_dir = fullfile(pwd,'img');
 
 par.display=0;
 par.run=1;
-
+par.pct = 1;
 
 %% Get files paths
 
@@ -84,7 +86,6 @@ e.getVolume.unzip
 e.reorderSeries('name'); % mostly useful for topup, that requires pairs of (AP,PA)/(PA,AP) scans
 
 e.explore
-
 dfonc    = e.getSerie('run_nm').toJob;
 dfonc_op = e.getSerie('run_blip').toJob;
 dfoncall = e.getSerie('run').toJob;
@@ -92,19 +93,6 @@ anat     = e.getSerie('anat_T1').toJob(0);
 
 
 %% Segment anat
-
-% %anat segment
-% anat = get_subdir_regex(suj,par.danat_reg)
-% fanat = get_subdir_regex_files(anat,par.anat_file_reg,1)
-%
-% par.GM   = [1 0 1 0]; % Unmodulated / modulated / native_space dartel / import
-% par.WM   = [1 0 1 0];
-% j_segment = job_do_segment(fanat,par)
-%
-% %apply normalize on anat
-% fy = get_subdir_regex_files(anat,'^y',1)
-% fanat = get_subdir_regex_files(anat,'^ms',1)
-% j_apply_normalise=job_apply_normalize(fy,fanat,par)
 
 %anat segment
 fanat = e.getSerie('anat').getVolume('^s').toJob;
@@ -122,17 +110,9 @@ e.getSerie('anat').addVolume('^wms','wms',1)
 
 %% Brain extract
 
-% ff=get_subdir_regex_files(anat,'^c[123]',3);
-% fo=addsuffixtofilenames(anat,'/mask_brain');
-% do_fsl_add(ff,fo)
-% fm=get_subdir_regex_files(anat,'^mask_b',1); fanat=get_subdir_regex_files(anat,'^s.*nii',1);
-% fo = addprefixtofilenames(fanat,'brain_');
-% do_fsl_mult(concat_cell(fm,fanat),fo);
-
-
 ff=e.getSerie('anat').addVolume('^c[123]','c',3);
 fo=addsuffixtofilenames(anat,'mask_brain');
-do_fsl_add(ff,fo)
+do_fsl_add(ff,fo);
 fm=e.getSerie('anat').addVolume('^mask_b','mask_brain',1);
 
 fanat=e.getSerie('anat').getVolume('^s').toJob;
@@ -179,6 +159,7 @@ ffonc = e.getSerie('run_nm').addVolume('^wutrf','wutrf',1);
 par.smooth = [8 8 8];
 j_smooth=job_smooth(ffonc,par);
 e.getSerie('run_nm').addVolume('^swutrf','swutrf',1)
+
 
 save('e','e')
 

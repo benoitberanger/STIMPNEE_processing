@@ -1,27 +1,23 @@
 clear
 clc
 
+load e
 
-return
 
 %% Prepare first level
 
-sta=r_mkdir(suj,'stat')
-do_delete(sta,0)
-sta=r_mkdir(suj,'stat')
-st =r_mkdir(sta,'fMRI')
+modelDir = e.mkdir('stat','fMRI');
+e.addModel('stat', 'fMRI','firstlevel' )
 
-[~, subdir] = get_parent_path(suj,1)
+[ completeExams, incompleteExams ] = e.removeIncomplete
 
-stimpath = [ pwd filesep 'stim' ];
-stimdir = get_subdir_regex(stimpath,subdir);
+modelDir = incompleteExams.mkdir('stat','fMRI');
+dfonc = incompleteExams.getSerie('run_nm').toJob;
+stimFiles = incompleteExams.getSerie('run_nm').getStim('run').toJob;
 
-fons = get_subdir_regex_files(stimdir,'MRI_[12]_SPM.mat$',2);
-char(fons)
-
-par.TR = 1.520;
 par.file_reg = '^swutrf';
 
+tic
 
 %% fMRI design specification
 
@@ -29,16 +25,19 @@ par.rp = 1; % realignment paramters : movement regressors
 
 par.run=1;
 par.display=0;
-j_fmri_desing = job_first_level_specify(dfonc,st,fons,par)
+
+par.pct = 1;
+
+j_fmri_desing = job_first_level_specify(dfonc,modelDir,stimFiles,par);
 
 
 %% Estime design
 
-fspm = get_subdir_regex_files(st,'SPM',1)
+fspm = incompleteExams.addModel('stat', 'fMRI','firstlevel' );
 
 par.run=1;
 par.display=0;
-j_estimate_model = job_first_level_estimate(fspm,par)
+j_estimate_model = job_first_level_estimate(fspm,par);
 
 
 %% Prepare contrasts
@@ -82,5 +81,17 @@ par.delete_previous=1;
 %% Generate contrasts
 
 par.sessrep = 'repl';
-j_contrast = job_first_level_contrast(fspm,contrast,par)
+j_contrast = job_first_level_contrast(fspm,contrast,par);
 
+
+%% save
+
+e.addModel('stat', 'fMRI','firstlevel' )
+
+for ex = 1 : numel(e)
+    e(ex).is_incomplete = [];
+end
+
+save e e
+
+toc
