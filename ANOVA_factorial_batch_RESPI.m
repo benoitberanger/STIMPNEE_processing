@@ -8,7 +8,7 @@ clc
 
 maindir = pwd;
 
-designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_Factorial_FORCE')
+designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_Factorial_RESPI')
 
 imagepath = get_subdir_regex(maindir,'img')
 

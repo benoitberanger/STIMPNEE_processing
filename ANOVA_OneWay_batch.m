@@ -8,9 +8,9 @@ clc
 
 maindir = pwd;
 
-designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_OneWay')
+designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_OneWay_OneSample')
 
-imagepath = get_subdir_regex(maindir,'img','(_V1_S1)|(_V5_S1)')
+imagepath = get_subdir_regex(maindir,'img','(_V1_S1)')
 char(imagepath)
 
 myContrasts = {
@@ -41,9 +41,9 @@ char(contrastpath), size(contrastpath)
 %     
 % end
 
-contrastfile{1} = get_subdir_regex_files(contrastpath,'con_0010.nii');
-contrastfile{2} = get_subdir_regex_files(contrastpath,'con_0011.nii');
-char(contrastfile), size(contrastfile)
+% contrastfile{1} = get_subdir_regex_files(contrastpath,'con_0010.nii');
+contrastfile{1} = get_subdir_regex_files(contrastpath,'con_0011.nii');
+% char(contrastfile), size(contrastfile)
 
 
 
@@ -55,7 +55,7 @@ char(contrastfile), size(contrastfile)
 % cfg_basicio BasicIO - Unknown
 %-----------------------------------------------------------------------
 job1{1}.spm.stats.factorial_design.dir = designdir;
-for c = 1 : length(myContrasts)
+for c = 1 : length(contrastfile)
    job1{1}.spm.stats.factorial_design.des.anova.icell(c).scans = contrastfile{c}'; 
 end
 job1{1}.spm.stats.factorial_design.des.anova.dept = 0;
@@ -97,18 +97,20 @@ spm_jobman('run', job2);
 
 %% Contraste
 
-contrast.names = myContrasts;
+% contrast.names = myContrasts;
+% 
+% 
+% vals = eye( length(contrast.names) );
+% 
+% contrast.values = {};
+% for v = 1 : size(vals,1)
+% 
+%     contrast.values{v,1} = vals(v,:);
+%         
+% end
 
-
-vals = eye( length(contrast.names) );
-
-contrast.values = {};
-for v = 1 : size(vals,1)
-
-    contrast.values{v,1} = vals(v,:);
-        
-end
-
+contrast.names{1} = 'con_';
+contrast.values{1} = [1];
 
 contrast.types = cat(1,repmat({'T'},[1 length(contrast.names)]));
 par.delete_previous=1;
@@ -117,7 +119,7 @@ par.run=1;
 
 %%
 
-job_first_level12_contrast(fspm,contrast,par)
+job_first_level_contrast(fspm,contrast,par)
 
 
 %% Prepare show
