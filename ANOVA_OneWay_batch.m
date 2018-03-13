@@ -29,7 +29,7 @@ myContrasts = {
     '2*Resp  - Null - Eye' % 13
     };
 
-contrastpath = get_subdir_regex(imagepath,'stat','fMRI');
+contrastpath = get_subdir_regex(imagepath,'stat','boxcar');
 char(contrastpath), size(contrastpath)
 
 % contrastfile = cell(length(myContrasts),1);

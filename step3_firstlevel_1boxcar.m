@@ -5,16 +5,27 @@ load e
 
 tic
 
+par.file_reg = '^swutrf';
+par.run=1;
+par.display=0;
+
+par.pct = 1;
+
+model_name = 'boxcar';
+
+
 %% Prepare first level
 
-modelDir = e.mkdir('stat','fMRI');
-e.addModel('stat', 'fMRI', 'firstlevel' )
+modelDir = e.mkdir('stat', model_name);
+e.addModel('stat', model_name, model_name)
 
 [ completeExams, incompleteExams ] = e.removeIncomplete
 
+%%
+
 if numel(incompleteExams) > 0
     
-    modelDir = incompleteExams.mkdir('stat','fMRI');
+    modelDir = incompleteExams.mkdir('stat',model_name);
     dfonc = incompleteExams.getSerie('run_nm').toJob;
     stimFiles = incompleteExams.getSerie('run_nm').getStim('run').toJob;
     
@@ -36,7 +47,7 @@ if numel(incompleteExams) > 0
     
     %% Estime design
     
-    fspm = incompleteExams.addModel('stat', 'fMRI','firstlevel' );
+    fspm = incompleteExams.addModel('stat', model_name, model_name);
     
     par.run=1;
     par.display=0;
@@ -89,7 +100,7 @@ if numel(incompleteExams) > 0
     
     %% save
     
-    e.addModel('stat', 'fMRI','firstlevel' )
+    e.addModel('stat', model_name, model_name)
     
     for ex = 1 : numel(e)
         e(ex).is_incomplete = [];

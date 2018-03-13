@@ -11,17 +11,19 @@ par.display=0;
 
 par.pct = 1;
 
+model_name = 'electrophyGlobal';
+
 
 %% Prepare first level
 
-modelDir = e.mkdir('stat','electrophy');
-e.addModel('stat', 'electrophy','electrophy' )
+modelDir = e.mkdir('stat',model_name);
+e.addModel('stat', model_name ,model_name )
 
 [ completeExams, incompleteExams ] = e.removeIncomplete
 
 if numel(incompleteExams) > 0
     
-    modelDir = incompleteExams.mkdir('stat','electrophy');
+    modelDir = incompleteExams.mkdir('stat',model_name);
     dfonc = incompleteExams.getSerie('run_nm').toJob;
     stimFiles = incompleteExams.getSerie('run_nm').getStim('run');
     stimFiles = stimFiles(:,1).toJob;
@@ -85,7 +87,7 @@ if numel(incompleteExams) > 0
     
     %% Estime design
     
-    fspm = incompleteExams.addModel('stat', 'electrophy','electrophy' );
+    fspm = incompleteExams.addModel('stat', model_name, model_name );
     
     par.run=1;
     par.display=0;
@@ -120,7 +122,7 @@ if numel(incompleteExams) > 0
     
     %% save
     
-    e.addModel('stat', 'electrophy', 'electrophy' )
+    e.addModel('stat', model_name, model_name )
     
     for ex = 1 : numel(e)
         e(ex).is_incomplete = [];

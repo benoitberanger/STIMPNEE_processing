@@ -26,7 +26,7 @@ for s = 1 : size(myScans)
     
     lvl  = cell2mat( myScans(s,[2 3]) );
     
-    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat','electrophy');
+    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat','electrophyGlobal');
     
     current_contrastfile = get_subdir_regex_files(current_imagepath,'con_0001.nii');
     

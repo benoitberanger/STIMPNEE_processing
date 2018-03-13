@@ -22,7 +22,6 @@ for idx = 1 : size(stim_files_char,1)
     
     S = load( deblank(stim_files_char(idx,:)) );
     
-    
     %% Volumes
     
     %     vol_idx  = cell2mat(S.DataStruct.TaskData.KL.KbEvents{1,2}(:,2)) == 1;
@@ -45,17 +44,17 @@ for idx = 1 : size(stim_files_char,1)
     Belt = cell2mat(S.DataStruct.TaskData.RR.Data(2:end-1,4));
     Belt = Belt-mean(Belt);
     Belt = Belt/(max(abs(Belt)));
-    BeltF = ft_preproc_bandpassfilter( Belt', 60, [0.001  0.3], 2 )';
+    BeltF = ft_preproc_bandpassfilter( Belt', freq, [0.001  0.3], 2 )';
     
     Grip = cell2mat(S.DataStruct.TaskData.RR.Data(2:end-1,5));
     Grip = Grip-mean(Grip);
     Grip = Grip/(max(abs(Grip)));
-    GripF = ft_preproc_bandpassfilter( Grip', 60, [0.001  0.3], 2 )';
+    GripF = ft_preproc_bandpassfilter( Grip', freq, [0.001  0.3], 2 )';
     
     Capn = cell2mat(S.DataStruct.TaskData.RR.Data(2:end-1,6));
     Capn = Capn-mean(Capn);
     Capn = Capn/(max(abs(Capn)));
-    CapnF = ft_preproc_bandpassfilter( Capn', 60, [0.001  0.3], 2 )';
+    CapnF = ft_preproc_bandpassfilter( Capn', freq, [0.001  0.3], 2 )';
     
     
     U(1).u = BeltF;
@@ -76,9 +75,9 @@ for idx = 1 : size(stim_files_char,1)
     
     X = spm_Volterra(U, xBF.bf, 1); % convolution
     
-    volumes_in_dataset = size(X,1)/60/TR;
+    volumes_in_dataset = size(X,1)/freq/TR;
     nrVolumes_dataset = floor(volumes_in_dataset);
-    X_reg = X( round((0:(nrVolumes_dataset - 1))*60*TR)+1 ,:); % resample
+    X_reg = X( round((0:(nrVolumes_dataset - 1))*freq*TR)+1 ,:); % resample
     
     RP = load( deblank(rp_files_char(idx,:)) );
     
@@ -96,7 +95,7 @@ for idx = 1 : size(stim_files_char,1)
     dit_to_save = get_parent_path( deblank(stim_files_char(idx,:)) );
     
     nr = deblank(stim_files_char(idx,:));
-    save(fullfile(dit_to_save, sprintf('R_%s.mat', nr(end-4)) ) , 'R', 'names' )
+    save(fullfile(dit_to_save, sprintf('R_Global_%s.mat', nr(end-4)) ) , 'R', 'names' )
     
     
     %% Plot
