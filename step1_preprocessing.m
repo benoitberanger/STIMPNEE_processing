@@ -66,7 +66,16 @@ end
 % dfoncall = get_subdir_regex_multi(suj,{par.dfonc_reg,par.dfonc_reg_oposit_phase })
 % anat = get_subdir_regex_one(suj,par.danat_reg) %should be no warning
 
-e = exam(main_dir, 'STIMPNEE' );
+% e = exam(main_dir, 'STIMPNEE' );
+
+% Only fetch subject used for sendonc level analisys
+E = exam.empty;
+r = rando;
+for subj = 1:size(r,1)
+    E = [E ; exam(main_dir,r{subj,1}) ]; %#ok<AGROW>
+end
+
+e = E;
 
 % 3DT1
 e.addSerie('t1mpr','anat_T1',1)

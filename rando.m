@@ -19,10 +19,10 @@ out = {
 % 'Temoin03_V1_S2'  1           1
 % 'Temoin03_V5_S2'  1           2
 
-'Temoin04_V1_S1'  2           1
-'Temoin04_V5_S1'  2           2
-'Temoin04_V1_S2'  1           1
-'Temoin04_V5_S2'  1           2
+% 'Temoin04_V1_S1'  2           1
+% 'Temoin04_V5_S1'  2           2
+% 'Temoin04_V1_S2'  1           1
+% 'Temoin04_V5_S2'  1           2
 
 % 'Temoin05_V1_S1'  2           1
 % 'Temoin05_V5_S1'  2           2
