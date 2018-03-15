@@ -65,11 +65,19 @@ for idx = 1 : size(stim_files_char,1)
     U(2).uu = Grip;
     U(2).name = {'Grip'};
     
-    U(3).u = [0 ; diff(BeltF)];
+    %     U(1).u = Belt;
+    %     U(1).uu = Belt;
+    %     U(1).name = {'Belt'};
+    %
+    %     U(2).u = Grip;
+    %     U(2).uu = Grip;
+    %     U(2).name = {'Grip'};
+    
+    U(3).u = [0 ; diff(BeltF)] * freq;
     U(3).uu = BeltF;
     U(3).name = {'Diff_Belt'};
     
-    U(4).u = [0 ; diff(GripF)];
+    U(4).u = [0 ; diff(GripF)] * freq;
     U(4).uu = GripF;
     U(4).name = {'Diff_Grip'};
     
@@ -100,16 +108,16 @@ for idx = 1 : size(stim_files_char,1)
     
     %% Plot
     
-    %     figure('Name',deblank(stim_files_char(idx,:)),'NumberTitle','off')
-    %     plot(R(:,1:4))
+    %         figure('Name',deblank(stim_files_char(idx,:)),'NumberTitle','off')
+    %         plot(R(:,1:4))
     %
-    %     for i = 1 : 4
-    %         figure
-    %         hold on
-    %         plot(Time,U(i).uu,'black')
-    %         plot(Time,U(i).u,'blue')
-    %         plot(Time,X(:,i),'magenta')
-    %         plot((0:size(X_reg,1)-1)*TR,X_reg(:,i),'red')
-    %     end
+    %         for i = 1 : 4
+    %             figure
+    %             hold on
+    %             plot(Time,U(i).uu,'black')
+    %             plot(Time,U(i).u,'blue')
+    %             plot(Time,X(:,i),'magenta')
+    %             plot((0:size(X_reg,1)-1)*TR,X_reg(:,i),'red')
+    %         end
     
 end

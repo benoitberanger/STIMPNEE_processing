@@ -70,7 +70,7 @@ end
 
 % Only fetch subject used for sendonc level analisys
 E = exam.empty;
-r = rando;
+r = tools.rando;
 for subj = 1:size(r,1)
     E = [E ; exam(main_dir,r{subj,1}) ]; %#ok<AGROW>
 end

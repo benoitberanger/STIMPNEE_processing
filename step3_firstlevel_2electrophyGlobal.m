@@ -22,14 +22,14 @@ e.addModel('stat', model_name ,model_name )
 [ completeExams, incompleteExams ] = e.removeIncomplete
 
 if numel(incompleteExams) > 0
-    
+
     modelDir = incompleteExams.mkdir('stat',model_name);
     dfonc = incompleteExams.getSerie('run_nm').toJob;
     stimFiles = incompleteExams.getSerie('run_nm').getStim('run');
     stimFiles = stimFiles(:,1).toJob;
     regressorDir = get_parent_path( stimFiles );
     
-    regressorFiles = get_subdir_regex_files(regressorDir, 'R_\d.mat$');
+    regressorFiles = get_subdir_regex_files(regressorDir, 'R_Global_\d.mat$');
     
     
     %% fMRI design specification
@@ -101,6 +101,8 @@ if numel(incompleteExams) > 0
         'Grip'
         'Derivative_Belt'
         'Derivative_Grip'
+        'Belt : nm + dt'
+        'Grip : nm + dt'
         };
     
     contrast.values = {
@@ -108,6 +110,8 @@ if numel(incompleteExams) > 0
         [0 1 0 0]
         [0 0 1 0]
         [0 0 0 1]
+        [1 0 1 0]
+        [0 1 0 1]
         };
     
     contrast.types = repmat({'T'},[1 length(contrast.values)]);

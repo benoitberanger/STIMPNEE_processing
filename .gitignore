@@ -4,4 +4,4 @@
 # Exept the scripts
 !*.m
 !.gitignore
-
+!+*
