@@ -1,21 +1,14 @@
-% close all
-clear
-% fclose('all')
-clc
-
-
-%% Parameters
+function main( modeldir, inputdir, contrastname )
 
 maindir = pwd;
 
-designdir = get_subdir_regex(maindir,'Analyse_2ndlevel','ANOVA_Factorial_RESPI_electrophy')
+designdir = r_mkdir(fullfile(maindir,'Analyse_2ndlevel'),modeldir);
 
-imagepath = get_subdir_regex(maindir,'img')
+imagepath = get_subdir_regex(maindir,'img');
 
-myScans = rando;
+myScans = tools.rando;
 
 % procedure = 1 => yellow, procedure = 2 => blue
-
 
 lvl_11 = [];
 lvl_12 = [];
@@ -26,9 +19,9 @@ for s = 1 : size(myScans)
     
     lvl  = cell2mat( myScans(s,[2 3]) );
     
-    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat','electrophyGlobal');
+    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat',inputdir);
     
-    current_contrastfile = get_subdir_regex_files(current_imagepath,'con_0001.nii');
+    current_contrastfile = get_subdir_regex_files(current_imagepath,contrastname);
     
     if isequal(lvl, [1 1])
         lvl_11 = [ lvl_11 current_contrastfile ];
@@ -100,17 +93,16 @@ mkdir(designdir{1})
 spm_jobman('run', job1);
 
 
-%% Estimate
+%% Estimate : Prepare
 
-fspm = get_subdir_regex_files( designdir , 'SPM.mat' , 1 )
+fspm = get_subdir_regex_files( designdir , 'SPM.mat' , 1 );
 
 job2{1}.spm.stats.fmri_est.spmmat = fspm ;
 job2{1}.spm.stats.fmri_est.write_residuals = 0;
 job2{1}.spm.stats.fmri_est.method.Classical = 1;
 
 
-%%
-
+%% Estimate : Run
 
 spm_jobman('run', job2);
 
@@ -154,17 +146,20 @@ job_first_level_contrast(fspm,contrast,par)
 
 show{1}.spm.stats.results.spmmat = fspm;
 show{1}.spm.stats.results.conspec.titlestr = '';
-show{1}.spm.stats.results.conspec.contrasts = 3;
-show{1}.spm.stats.results.conspec.threshdesc = 'none'; % 'none' 'FWE' 'FDR'
+show{1}.spm.stats.results.conspec.contrasts = 1;
+show{1}.spm.stats.results.conspec.threshdesc = 'FWE'; % 'none' 'FWE' 'FDR'
 show{1}.spm.stats.results.conspec.thresh = 0.05;
 show{1}.spm.stats.results.conspec.extent = 10;
 show{1}.spm.stats.results.conspec.conjunction = 1;
 show{1}.spm.stats.results.conspec.mask.none = 1;
 show{1}.spm.stats.results.units = 1;
-show{1}.spm.stats.results.print = 'ps';
+show{1}.spm.stats.results.print = false;
 show{1}.spm.stats.results.write.none = 1;
 
 
 %% Display
 
 spm_jobman('run', show );
+
+
+end % function
