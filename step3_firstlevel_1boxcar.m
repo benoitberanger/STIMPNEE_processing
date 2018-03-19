@@ -27,7 +27,7 @@ if numel(incompleteExams) > 0
     
     modelDir = incompleteExams.mkdir('stat',model_name);
     dfonc = incompleteExams.getSerie('run_nm').toJob;
-    stimFiles = incompleteExams.getSerie('run_nm').getStim('run').toJob;
+    stimFiles = incompleteExams.getSerie('run_nm').getStim('run_\d_SPM').toJob;
     
     par.file_reg = '^swutrf';
     

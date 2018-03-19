@@ -44,8 +44,9 @@ for idx = 1 : size(stim_files_char,1)
         start_block = find(BlockData{e,2} == Time);
         if e ~= size(BlockData,1)
             stop_block = find(BlockData{e+1,2} == Time);
+            stop_block = stop_block-1;
         else
-            stop_block = Time(end);
+            stop_block = length(Time);
         end
         
         switch BlockData{e,1}
@@ -96,7 +97,7 @@ for idx = 1 : size(stim_files_char,1)
     
     %     figure
     %     plot(R)
-    %
+    
     %     for i = 1 : numel(U)
     %         figure('Name',U(i).name{1},'NumberTitle','off')
     %         hold on
