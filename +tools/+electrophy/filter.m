@@ -1,4 +1,4 @@
-function [ X_raw, X_filtered, Time ] = filter( input, freq )
+function [ X_raw, X_filtered, Time, BlockData ] = filter( input, freq )
 
 S = load( input );
 
@@ -8,8 +8,11 @@ S = load( input );
 %     vol_idx  = cell2mat(S.DataStruct.TaskData.KL.KbEvents{1,2}(:,2)) == 1;
 %     vol_time = cell2mat(S.DataStruct.TaskData.KL.KbEvents{1,2}(vol_idx,1));
 
-Time  = cell2mat(S.DataStruct.TaskData.RR.Data(2:end-1,2));
+Time      = cell2mat(S.DataStruct.TaskData.RR.Data(2:end-1,2));
 
+S.DataStruct.TaskData.ER.MakeBlocks;
+BlockData = S.DataStruct.TaskData.ER.BlockData;
+BlockData = BlockData(2:end-1,:);
 
 %% Convonve HRF from SPM
 

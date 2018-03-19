@@ -1,4 +1,4 @@
-function [ R, names ] = U2R( U, TR, freq, input_rp )
+function [ R, names, X, X_reg ] = U2R( U, TR, freq, input_rp )
 
 [ X ] = tools.electrophy.volterra_convolution( U, TR );
 

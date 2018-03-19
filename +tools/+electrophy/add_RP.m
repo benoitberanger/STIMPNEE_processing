@@ -4,7 +4,7 @@ RP = load( input_rp );
 
 % add 0 at the end for the remaining volumes without stim
 if size(RP,1) - volumes_in_dataset_int > 0
-    X_reg = [X_reg ; zeros( size(RP,1) - volumes_in_dataset_int ,4)];
+    X_reg = [X_reg ; zeros( size(RP,1) - volumes_in_dataset_int ,size(X_reg,2))];
 elseif size(RP,1) - volumes_in_dataset_int < 0
     X_reg = X_reg(1:size(RP,1),:);
 end

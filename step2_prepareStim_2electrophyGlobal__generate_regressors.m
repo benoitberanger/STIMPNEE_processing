@@ -19,6 +19,8 @@ for idx = 1 : size(stim_files_char,1)
     fprintf('input : %s \n', input)
     
     [ X_raw, X_filtered, Time ] = tools.electrophy.filter( input, freq );
+    [ X_filtered_derivate ]     = tools.electrophy.derivate( X_filtered, freq );
+    
     
     %% Specifique part
     
@@ -30,7 +32,6 @@ for idx = 1 : size(stim_files_char,1)
     U(2).raw  = X_raw     (:,2);
     U(2).name = {'Grip'};
     
-    [ X_filtered_derivate ] = tools.electrophy.derivate( X_filtered, freq );
     
     U(3).u    = X_filtered_derivate(:,1);
     U(3).raw  = X_filtered(:,2);
@@ -40,7 +41,10 @@ for idx = 1 : size(stim_files_char,1)
     U(4).raw  = X_filtered(:,2);
     U(4).name = {'Diff_Grip'};
     
-    [ R, names ] = tools.electrophy.U2R( U, TR, freq, input_rp );
+    
+    %% Generate regressors
+    
+    [ R, names, X, X_reg ] = tools.electrophy.U2R( U, TR, freq, input_rp );
     
     
     %% Save
@@ -56,10 +60,10 @@ for idx = 1 : size(stim_files_char,1)
     %% Plot
     
     %     figure
-    %     plot(R(:,1:4))
+    %     plot(R)
     %
-    %     for i = 1 : 4
-    %         figure
+    %     for i = 1 : numel(U)
+    %         figure('Name',U(i).name{1},'NumberTitle','off')
     %         hold on
     %         plot(Time,U(i).raw,'black')
     %         plot(Time,U(i).u,'blue')
