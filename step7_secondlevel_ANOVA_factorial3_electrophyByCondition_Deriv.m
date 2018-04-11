@@ -1,7 +1,41 @@
-function main( modeldir, inputdir, contrastname )
+clear
+clc
+
+all_contrasts = {
+    
+'Belt_NULL'
+'Belt_Eye'
+'Belt_Resp'
+'Belt_Force'
+
+'Belt_Diff_NULL'
+'Belt_Diff_Eye'
+'Belt_Diff_Resp'
+'Belt_Diff_Force'
+
+'Grip_Force'
+'Grip_Diff_Force'
+
+'Belt_Resp - Belt_Force' % 11
+'Belt_Resp - Belt_Eye'   % 12
+'Belt_Resp - Belt_NULL'
+
+'Belt_Diff_Resp - Belt_Diff_Force'
+'Belt_Diff_Resp - Belt_Diff_Eye'
+'Belt_Diff_Resp - Belt_Diff_NULL'
+
+'Belt_Force - Belt_NULL'% 17
+'Belt_Eye - Belt_NULL'  % 18
+
+'Belt_Diff_Force - Belt_Diff_NULL'
+'Belt_Diff_Eye - Belt_Diff_NULL'
+
+};
+
 
 maindir = pwd;
 
+modeldir = 'ANOVA_factorial3_electrophyByCondition_Derivatives';
 designdir = r_mkdir(fullfile(maindir,'Analyse_2ndlevel'),modeldir);
 
 imagepath = get_subdir_regex(maindir,'img');
@@ -10,35 +44,41 @@ myScans = tools.rando;
 
 % procedure = 1 => yellow, procedure = 2 => blue
 
-lvl_11 = [];
-lvl_12 = [];
-lvl_21 = [];
-lvl_22 = [];
+lvl_111 = [];
+lvl_121 = [];
+lvl_211 = [];
+lvl_221 = [];
+lvl_112 = [];
+lvl_122 = [];
+lvl_212 = [];
+lvl_222 = [];
+
 
 for s = 1 : size(myScans,1)
     
     lvl  = cell2mat( myScans(s,[2 3]) );
     
-    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat',inputdir);
+    current_imagepath = get_subdir_regex(imagepath,myScans{s,1},'stat','electrophyByConditon');
     
-    current_contrastfile = get_subdir_regex_files(current_imagepath,contrastname);
+    current_contrastfile_BeltResp  = get_subdir_regex_files(current_imagepath,'con_0007.nii');
+    current_contrastfile_BeltForce = get_subdir_regex_files(current_imagepath,'con_0008.nii');
     
     if isequal(lvl, [1 1])
-        lvl_11 = [ lvl_11 current_contrastfile ];
+        lvl_111 = [ lvl_111 ; current_contrastfile_BeltResp ];
+        lvl_112 = [ lvl_112 ; current_contrastfile_BeltForce ];
     elseif isequal(lvl, [1 2])
-        lvl_12 = [ lvl_12 current_contrastfile ];
+        lvl_121 = [ lvl_121 ; current_contrastfile_BeltResp ];
+        lvl_122 = [ lvl_122 ; current_contrastfile_BeltForce ];
     elseif isequal(lvl, [2 1])
-        lvl_21 = [ lvl_21 current_contrastfile ];
+        lvl_211 = [ lvl_211 ; current_contrastfile_BeltResp ];
+        lvl_212 = [ lvl_212 ; current_contrastfile_BeltForce ];
     elseif isequal(lvl, [2 2])
-        lvl_22 = [ lvl_22 current_contrastfile ];
+        lvl_221 = [ lvl_221 ; current_contrastfile_BeltResp ];
+        lvl_222 = [ lvl_222 ; current_contrastfile_BeltForce ];
     end
     
 end
 
-char(lvl_11), size(lvl_11)
-char(lvl_12), size(lvl_12)
-char(lvl_21), size(lvl_21)
-char(lvl_22), size(lvl_22)
 
 
 %% Fill the 2nd lvl design job
@@ -61,14 +101,33 @@ job1{1}.spm.stats.factorial_design.des.fd.fact(2).dept = 0;
 job1{1}.spm.stats.factorial_design.des.fd.fact(2).variance = 0;
 job1{1}.spm.stats.factorial_design.des.fd.fact(2).gmsca = 0;
 job1{1}.spm.stats.factorial_design.des.fd.fact(2).ancova = 0;
-job1{1}.spm.stats.factorial_design.des.fd.icell(1).levels = [1 1];
-job1{1}.spm.stats.factorial_design.des.fd.icell(1).scans = lvl_11';
-job1{1}.spm.stats.factorial_design.des.fd.icell(2).levels = [1 2];
-job1{1}.spm.stats.factorial_design.des.fd.icell(2).scans = lvl_12';
-job1{1}.spm.stats.factorial_design.des.fd.icell(3).levels = [2 1];
-job1{1}.spm.stats.factorial_design.des.fd.icell(3).scans = lvl_21';
-job1{1}.spm.stats.factorial_design.des.fd.icell(4).levels = [2 2];
-job1{1}.spm.stats.factorial_design.des.fd.icell(4).scans = lvl_22';
+job1{1}.spm.stats.factorial_design.des.fd.fact(3).name = 'Condition';
+job1{1}.spm.stats.factorial_design.des.fd.fact(3).levels = 2;
+job1{1}.spm.stats.factorial_design.des.fd.fact(3).dept = 0;
+job1{1}.spm.stats.factorial_design.des.fd.fact(3).variance = 0;
+job1{1}.spm.stats.factorial_design.des.fd.fact(3).gmsca = 0;
+job1{1}.spm.stats.factorial_design.des.fd.fact(3).ancova = 0;
+
+job1{1}.spm.stats.factorial_design.des.fd.icell(1).levels = [1 1 1];
+job1{1}.spm.stats.factorial_design.des.fd.icell(1).scans = lvl_111;
+job1{1}.spm.stats.factorial_design.des.fd.icell(2).levels = [1 1 2];
+job1{1}.spm.stats.factorial_design.des.fd.icell(2).scans = lvl_112;
+
+job1{1}.spm.stats.factorial_design.des.fd.icell(3).levels = [1 2 1];
+job1{1}.spm.stats.factorial_design.des.fd.icell(3).scans = lvl_121;
+job1{1}.spm.stats.factorial_design.des.fd.icell(4).levels = [1 2 2];
+job1{1}.spm.stats.factorial_design.des.fd.icell(4).scans = lvl_122;
+
+job1{1}.spm.stats.factorial_design.des.fd.icell(5).levels = [2 1 1];
+job1{1}.spm.stats.factorial_design.des.fd.icell(5).scans = lvl_211;
+job1{1}.spm.stats.factorial_design.des.fd.icell(6).levels = [2 1 2];
+job1{1}.spm.stats.factorial_design.des.fd.icell(6).scans = lvl_212;
+
+job1{1}.spm.stats.factorial_design.des.fd.icell(7).levels = [2 2 1];
+job1{1}.spm.stats.factorial_design.des.fd.icell(7).scans = lvl_221;
+job1{1}.spm.stats.factorial_design.des.fd.icell(8).levels = [2 2 2];
+job1{1}.spm.stats.factorial_design.des.fd.icell(8).scans = lvl_222;
+
 job1{1}.spm.stats.factorial_design.des.fd.contrasts = 1;
 job1{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
 job1{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});
@@ -160,6 +219,3 @@ show{1}.spm.stats.results.write.none = 1;
 %% Display
 
 spm_jobman('run', show );
-
-
-end % function
