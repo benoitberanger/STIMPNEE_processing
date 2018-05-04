@@ -1,4 +1,4 @@
-function [ X_raw, X_filtered, Time, BlockData ] = filter( input, freq )
+function [ X_raw, X_filtered, Time, BlockData ] = filter( input, freq, Fbp )
 
 S = load( input );
 
@@ -31,7 +31,13 @@ Grip = Grip/(max(abs(Grip)));
 % X_raw = [Belt, Grip, Capn];
 X_raw = [Belt, Grip];
 
-X_filtered = ft_preproc_bandpassfilter( X_raw', freq, [0.001  0.3], 2 )';
+if isnumeric(Fbp)
+    X_filtered = ft_preproc_bandpassfilter( X_raw', freq, Fbp, 2 )';
+elseif iscell(Fbp)
+    X_filtered = [ft_preproc_bandpassfilter( X_raw(:,1)', freq, Fbp{1}, 2 )' ft_preproc_bandpassfilter( X_raw(:,2)', freq, Fbp{2}, 2 )'];
+else
+    error('Fbp')
+end
 
 
 end % function

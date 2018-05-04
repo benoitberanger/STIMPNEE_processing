@@ -18,7 +18,7 @@ for idx = 1 : size(stim_files_char,1)
     
     fprintf('input : %s \n', input)
     
-    [ X_raw, X_filtered, Time, BlockData ] = tools.electrophy.filter( input, freq );
+    [ X_raw, X_filtered, Time, BlockData ] = tools.electrophy.filter( input, freq, [0.001 0.3] );
     [ X_filtered_derivate ]                = tools.electrophy.derivate( X_filtered, freq );
     
     

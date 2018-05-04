@@ -18,7 +18,7 @@ for idx = 1 : size(stim_files_char,1)
     
     fprintf('input : %s \n', input)
     
-    [ X_raw, X_filtered, Time ] = tools.electrophy.filter( input, freq );
+    [ X_raw, X_filtered, Time ] = tools.electrophy.filter( input, freq, [0.001 0.3] );
     [ X_filtered_derivate ]     = tools.electrophy.derivate( X_filtered, freq );
     
     
@@ -34,7 +34,7 @@ for idx = 1 : size(stim_files_char,1)
     
     
     U(3).u    = X_filtered_derivate(:,1);
-    U(3).raw  = X_filtered(:,2);
+    U(3).raw  = X_filtered(:,1);
     U(3).name = {'Diff_Belt'};
     
     U(4).u    = X_filtered_derivate(:,2);
