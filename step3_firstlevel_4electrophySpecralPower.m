@@ -21,6 +21,9 @@ e.addModel('stat', model_name ,model_name )
 
 [ completeExams, incompleteExams ] = e.removeIncomplete
 
+
+%%
+
 if numel(incompleteExams) > 0
     
     modelDir = incompleteExams.mkdir('stat',model_name);
@@ -39,7 +42,7 @@ if numel(incompleteExams) > 0
     %     j_fmri_desing = job_first_level_specify(dfonc,modelDir,stimFiles,par);
     
     matlabbatch = cell(length(modelDir),1);
-    for subj = 1 %: length(modelDir)
+    for subj = 1 : length(modelDir)
         
         currentRun_1 = get_subdir_regex_files(dfonc{subj}{1},par.file_reg);
         
@@ -64,14 +67,24 @@ if numel(incompleteExams) > 0
         matlabbatch{subj}.spm.stats.fmri_spec.sess(1).scans = allVolumes_1;
         matlabbatch{subj}.spm.stats.fmri_spec.sess(1).cond = struct('name', {}, 'onset', {}, 'duration', {}, 'tmod', {}, 'pmod', {}, 'orth', {});
         matlabbatch{subj}.spm.stats.fmri_spec.sess(1).multi = stimFiles_1(subj);
-        matlabbatch{subj}.spm.stats.fmri_spec.sess(1).regress = struct('name', {}, 'val', {});
-        matlabbatch{subj}.spm.stats.fmri_spec.sess(1).multi_reg = {regressorFiles{subj}(1,:)};
+        sess = 1;
+        REG = load(deblank(regressorFiles{subj}(sess,:)));
+        for r = 1 : length(REG.names)
+            matlabbatch{subj}.spm.stats.fmri_spec.sess(sess).regress(r).name = REG.names{r};
+            matlabbatch{subj}.spm.stats.fmri_spec.sess(sess).regress(r).val = REG.R(:,r);
+        end
+        matlabbatch{subj}.spm.stats.fmri_spec.sess(1).multi_reg = gfile( dfonc{subj}{1} , '^rp.*txt' , 1 );
         matlabbatch{subj}.spm.stats.fmri_spec.sess(1).hpf = 128;
         matlabbatch{subj}.spm.stats.fmri_spec.sess(2).scans = allVolumes_2;
         matlabbatch{subj}.spm.stats.fmri_spec.sess(2).cond = struct('name', {}, 'onset', {}, 'duration', {}, 'tmod', {}, 'pmod', {}, 'orth', {});
         matlabbatch{subj}.spm.stats.fmri_spec.sess(2).multi = stimFiles_2(subj);
-        matlabbatch{subj}.spm.stats.fmri_spec.sess(2).regress = struct('name', {}, 'val', {});
-        matlabbatch{subj}.spm.stats.fmri_spec.sess(2).multi_reg = {regressorFiles{subj}(2,:)};
+        sess = 2;
+        REG = load(deblank(regressorFiles{subj}(sess,:)));
+        for r = 1 : length(REG.names)
+            matlabbatch{subj}.spm.stats.fmri_spec.sess(sess).regress(r).name = REG.names{r};
+            matlabbatch{subj}.spm.stats.fmri_spec.sess(sess).regress(r).val = REG.R(:,r);
+        end
+        matlabbatch{subj}.spm.stats.fmri_spec.sess(2).multi_reg = gfile( dfonc{subj}{2} , '^rp.*txt' , 1 );
         matlabbatch{subj}.spm.stats.fmri_spec.sess(2).hpf = 128;
         matlabbatch{subj}.spm.stats.fmri_spec.fact = struct('name', {}, 'levels', {});
         matlabbatch{subj}.spm.stats.fmri_spec.bases.none = true;
@@ -84,7 +97,7 @@ if numel(incompleteExams) > 0
     end
     
     
-    [ matlabbatch ] = job_ending_rountines( matlabbatch(1), [], par );
+    [ matlabbatch ] = job_ending_rountines( matlabbatch, [], par );
     
     
     %% Estime design
@@ -98,10 +111,24 @@ if numel(incompleteExams) > 0
     
     %% Prepare contrasts
     
+    contrast = struct;
+    
+    %     1 0 0 0 0 0 0 0 rp 1 0 0 0 0 0 0 0 rp;
+    %     0 1 0 0 0 0 0 0 rp 0 1 0 0 0 0 0 0 rp;
+    %     0 0 1 0 0 0 0 0 rp 0 0 1 0 0 0 0 0 rp;
+    %     0 0 0 1 0 0 0 0 rp 0 0 0 1 0 0 0 0 rp;
+    %     0 0 0 0 1 0 0 0 rp 0 0 0 0 1 0 0 0 rp;
+    %     0 0 0 0 0 1 0 0 rp 0 0 0 0 0 1 0 0 rp;
+    %     0 0 0 0 0 0 1 0 rp 0 0 0 0 0 0 1 0 rp;
+    %     0 0 0 0 0 0 0 1 rp 0 0 0 0 0 0 0 1 rp;
+    
+    % Boxcar : condition stim
     NULL  = [1 0 0 0  0 0 0 0];
     Force = [0 1 0 0  0 0 0 0];
     Resp  = [0 0 1 0  0 0 0 0];
     Eye   = [0 0 0 1  0 0 0 0];
+    
+    % Spectral Power : electrophy
     Belt  = [0 0 0 0  1 0 0 0];
     Grip  = [0 0 0 0  0 1 0 0];
     BeltD = [0 0 0 0  0 0 1 0];
@@ -110,21 +137,25 @@ if numel(incompleteExams) > 0
     
     contrast.values = {
         
+    % Boxcar
     NULL
     Force
     Resp
     Eye
+    
+    % Spectral Power
     Belt
     Grip
     BeltD
     GripD
     
+    % Boxcar + Spectral Power
     NULL  + Belt
     Force + Belt
-    Resp  + Belt
+    Resp  + Belt % !
     Eye   + Belt
     
-    Force + Grip
+    Force + Grip % !
     
     };
 
@@ -149,6 +180,14 @@ contrast.names = {
 };
 
 contrast.types = repmat({'T'},[1 length(contrast.values)]);
+
+
+% F contrast
+
+contrast.values = [contrast.values; {eye(8)}];
+contrast.names	= [contrast.names ; 'effects of interest'];
+contrast.types  = [contrast.types   'F'];
+
 par.delete_previous=1;
 
 
@@ -168,6 +207,6 @@ end
 
 end
 
-% save e e
+save e e
 
 toc

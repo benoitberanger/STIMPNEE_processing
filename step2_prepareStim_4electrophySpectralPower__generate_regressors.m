@@ -117,6 +117,10 @@ for idx = 1 : size(stim_files_char,1)
     
     [ R, names, X, X_reg ] = tools.electrophy.U2R( U, TR, freq, input_rp );
     
+    % Delete the RP : we need to add the personnal regressors as Regressor, not Multiple_Regressor
+    R = R(:,1:end-6);
+    names = names(1:end-6);
+    
     
     %% Save
     
