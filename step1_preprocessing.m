@@ -3,6 +3,9 @@ clc
 
 use_pct = 1; % Parallel Computing Toolbox
 
+setenv('FSLOUTPUTTYPE', 'NIFTI')
+par.fsl_output_format = 'NIFTI';
+
 %% Prepare paths and regexp
 
 % chemin=[ pwd filesep 'img' ];
@@ -86,8 +89,8 @@ e.addSerie('PA$','run_nm',2)
 e.getSerie('run_nm').addVolume('^f.*nii','f',1)
 
 % run 1 & 2 : blip
-e.addSerie('PAblip$','run_blip',2)
-e.getSerie('run_blip').addVolume('^f.*nii','f',1)
+e.addSerie('PAblip$','run_bp',2)
+e.getSerie('run_bp').addVolume('^f.*nii','f',1)
 
 % Unzip if necessary
 e.getVolume.unzip
@@ -96,7 +99,7 @@ e.reorderSeries('name'); % mostly useful for topup, that requires pairs of (AP,P
 
 e.explore
 dfonc    = e.getSerie('run_nm').toJob;
-dfonc_op = e.getSerie('run_blip').toJob;
+dfonc_op = e.getSerie('run_bp').toJob;
 dfoncall = e.getSerie('run').toJob;
 anat     = e.getSerie('anat_T1').toJob(0);
 
@@ -104,22 +107,31 @@ anat     = e.getSerie('anat_T1').toJob(0);
 %% Segment anat
 
 %anat segment
-fanat = e.getSerie('anat').getVolume('^s').toJob;
+fanat = e.getSerie('anat').getVolume('^s');
 
 par.GM   = [0 0 1 0]; % Unmodulated / modulated / native_space dartel / import
 par.WM   = [0 0 1 0];
 j_segment = job_do_segment(fanat,par);
-fy    = e.getSerie('anat').addVolume('^y' ,'y' );
-fanat = e.getSerie('anat').addVolume('^ms','ms');
 
 %apply normalize on anat
+fy    = e.getSerie('anat').getVolume('^y_s' );
+fanat = e.getSerie('anat').getVolume('^ms');
+par.vox          = [NaN NaN NaN];
 j_apply_normalise=job_apply_normalize(fy,fanat,par);
-e.getSerie('anat').addVolume('^wms','wms',1)
+
+% Apply normalize on C1 C2 C3
+fc1 = e.getSerie('anat').getVolume('^c1s');
+fc2 = e.getSerie('anat').getVolume('^c2s');
+fc3 = e.getSerie('anat').getVolume('^c3s');
+par.vox = [2.5 2.5 2.5]; % for tapas/physio
+job_apply_normalize(fy,fc1,par);
+job_apply_normalize(fy,fc2,par);
+job_apply_normalize(fy,fc3,par);
 
 
 %% Brain extract
 
-ff=e.getSerie('anat').addVolume('^c[123]','c',3);
+ff=e.getSerie('anat').addVolume('^c[123]','C',3);
 fo=addsuffixtofilenames(anat,'mask_brain');
 do_fsl_add(ff,fo);
 fm=e.getSerie('anat').addVolume('^mask_b','mask_brain',1);
@@ -133,42 +145,45 @@ e.getSerie('anat').addVolume('^brain_','brain_extract',1)
 %% Preprocess fMRI runs
 
 %realign and reslice
-par.file_reg = '^f.*nii'; par.type = 'estimate_and_reslice';
-j_realign_reslice = job_realign(dfonc,par);
-e.getSerie('run_nm').addVolume('^rf','rf',1)
+j_realign_reslice = job_realign(e.getSerie('run_nm').getVolume('^f'),par);
 
 %realign and reslice opposite phase
-par.file_reg = '^f.*nii'; par.type = 'estimate_and_reslice';
-j_realign_reslice_op = job_realign(dfonc_op,par);
-e.getSerie('run_blip').addVolume('^rf','rf',1)
+j_realign_reslice_op = job_realign(e.getSerie('run_bp').getVolume('^f'),par);
 
 %topup and unwarp
-par.file_reg = {'^rf.*nii'}; par.sge=0;
-do_topup_unwarp_4D(dfoncall,par)
-e.getSerie('run').addVolume('^utmeanf','utmeanf',1)
-e.getSerie('run').addVolume('^utrf.*nii','utrf',1)
+par.sge=0;
+do_topup_unwarp_4D(e.getSerie('run').getVolume('^rf'),par)
 
 %coregister mean fonc on brain_anat
 % fanat = get_subdir_regex_files(anat,'^s.*nii$',1) % raw anat
 % fanat = get_subdir_regex_files(anat,'^ms.*nii$',1) % raw anat + signal bias correction
 % fanat = get_subdir_regex_files(anat,'^brain_s.*nii$',1) % brain mask applied (not perfect, there are holes in the mask)
-fanat = e.getSerie('anat').getVolume('^brain_extract').toJob;
+fanat = e.getSerie('anat').getVolume('^brain_extract');
 
-fmean = e.getSerie('run_nm_001').getVolume('^utmeanf').toJob;
-fo = e.getSerie('run_nm').getVolume('^utrf').toJob;
+fmean = e.getSerie('run_nm_001').getVolume('^utmeanf');
+fo = e.getSerie('run_nm').getVolume('^utrf');
 par.type = 'estimate';
 j_coregister=job_coregister(fmean,fanat,fo,par);
 
 %apply normalize
-fy = e.getSerie('anat').getVolume('^y').toJob;
-j_apply_normalize=job_apply_normalize(fy,fo,par);
+fy = e.getSerie('anat').getVolume('^y');
+par.vox                = [2.5 2.5 2.5]; % for tapas/physio
+j_apply_normalize      = job_apply_normalize(fy,fo   ,par);
+j_apply_normalize_mean = job_apply_normalize(fy,fmean,par);
 
 %smooth the data
-ffonc = e.getSerie('run_nm').addVolume('^wutrf','wutrf',1);
+ffonc = e.getSerie('run_nm').getVolume('^wutrf');
 par.smooth = [8 8 8];
 j_smooth=job_smooth(ffonc,par);
 e.getSerie('run_nm').addVolume('^swutrf','swutrf',1)
 
+% Coregister wc[23] -> wmean
+par.type = 'estimate_and_write';
+j_coregister_w=job_coregister(...
+    e.gser('anat').gvol('wc2'),...
+    e.gser('run' ).gvol('wutmean').removeEmpty,...
+    e.gser('anat').gvol('wc3'),...
+    par);
 
 save('e','e')
 
