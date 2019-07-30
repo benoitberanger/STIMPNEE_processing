@@ -23,7 +23,7 @@ nRun   = 2;
 
 job_DECONV = cell(length(models),nRun,numel(fileROI));
 
-for j = 1 : size(job_DECONV,1)
+for j = 1 : length(models)
     
     for r = 1 : nRun
         
