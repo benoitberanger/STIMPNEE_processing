@@ -21,13 +21,6 @@ fileROI = cellstr(char(gfile(dirROI,'nii$'))); fileROI = remove_regex(fileROI,'T
 char(fileROI)
 
 
-
-
-
-
-
-
-
 %% Fetch fMRI volumes & stim files & regressors
 
 dfonc = e.getSerie('run_nm').toJob;
