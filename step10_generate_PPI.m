@@ -88,8 +88,7 @@ for j = 1 : length(models)
             
             for reg = 1 : length(regressor_name)
                 
-                PPI(reg)          = PPI(1);
-                PPI(reg).reg_name = regressor_name{reg};
+                PPI.reg_name = regressor_name{reg};
                 
                 reg_name   = sprintf('Sn(%d) %s',r,regressor_name{reg});
                 reg_column = strcmp(SPM.xX.name,reg_name);
@@ -98,11 +97,11 @@ for j = 1 : length(models)
                 reg_timeserie = SPM.xX.X(run_scan_idx,reg_column);
                 
                 % P ===========================================================
-                PPI(reg).P = reg_timeserie;
+                PPI.P = reg_timeserie;
                 
                 % ppi =========================================================
-                PPI(reg).ppi = PPI(reg).Y .* PPI(reg).P;
-                PPI(reg).ppi = spm_detrend(PPI(reg).ppi);
+                PPI.ppi = PPI.Y .* PPI.P;
+                PPI.ppi = spm_detrend(PPI.ppi);
                 
                 fname = fullfile(model_path,sprintf('modelPPI_%s_%s_run%d.mat',regressor_name{reg},nameROI,r));
                 fprintf('Writing %s \n',fname)
