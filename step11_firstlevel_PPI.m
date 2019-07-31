@@ -168,113 +168,36 @@ end  % subj
 
 [ matlabbatch ] = job_ending_rountines( matlabbatch, [], par );
 
+fspm = e.addModel('stat', model_name_base, model_name ,model_name );
 
 
 %% Estime design
 
-
-fspm = cell(0);
-
-for subj = 1 : length(e)
-    for i = 1 : numel(fileROI)
-        
-        [~,nameROI] = spm_fileparts(fileROI{i});
-        
-        regressor_name = {'Belt', 'Grip'};
-        
-        for reg = 1 : length(regressor_name)
-            
-            
-            model_name = sprintf('PPI_%s_%s',regressor_name{reg},nameROI);
-            
-            modelDir = e(subj).mkdir('stat',model_name_base,model_name);
-            betafile = fullfile(char(modelDir),'beta_0001.nii');
-            if exist(betafile,'file')
-                continue
-            end
-            fspm{end+1,1} = fullfile(char(modelDir),'SPM.mat');
-            
-        end % reg
-        
-    end % roi
-    
-end  % subj
-
-
 j_estimate_model = job_first_level_estimate(fspm,par);
-
-return
 
 
 %% Prepare contrasts
 
 contrast = struct;
 
-% Boxcar : condition stim
-NULL  = [1 0 0 0  0 0 0 0];
-Force = [0 1 0 0  0 0 0 0];
-Resp  = [0 0 1 0  0 0 0 0];
-Eye   = [0 0 0 1  0 0 0 0];
-
-% Spectral Power : electrophy
-Belt  = [0 0 0 0  1 0 0 0];
-Grip  = [0 0 0 0  0 1 0 0];
-BeltD = [0 0 0 0  0 0 1 0];
-GripD = [0 0 0 0  0 0 0 1];
+ppi    = zeros(7,1);
+ppi(7) = 1;
 
 
 contrast.values = {
     
-% Boxcar
-NULL
-Force
-Resp
-Eye
-
-% Spectral Power
-Belt
-Grip
-BeltD
-GripD
-
-% Boxcar + Spectral Power
-NULL  + Belt
-Force + Belt
-Resp  + Belt % !
-Eye   + Belt
-
-Force + Grip % !
+ppi
 
 };
 
 contrast.names = {
     
-'NULL'
-'Force'
-'Resp'
-'Eye'
-'Belt'
-'Grip'
-'BeltD'
-'GripD'
-
-'NULL  + Belt'
-'Force + Belt'
-'Resp  + Belt'
-'Eye   + Belt'
-
-'Force + Grip'
+'ppi'
 
 };
 
 contrast.types = repmat({'T'},[1 length(contrast.values)]);
 
-
-% F contrast
-
-contrast.values = [contrast.values; {eye(8)}];
-contrast.names	= [contrast.names ; 'effects of interest'];
-contrast.types  = [contrast.types   'F'];
 
 par.delete_previous=1;
 
@@ -286,13 +209,6 @@ j_contrast = job_first_level_contrast(fspm,contrast,par);
 
 
 %% save
-
-e.addModel('stat', model_name, model_name )
-
-for ex = 1 : numel(e)
-    e(ex).is_incomplete = [];
-end
-
 
 save e e
 
