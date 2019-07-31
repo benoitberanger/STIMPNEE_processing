@@ -168,12 +168,37 @@ end  % subj
 
 [ matlabbatch ] = job_ending_rountines( matlabbatch, [], par );
 
-fspm = e.addModel('stat', model_name_base, model_name ,model_name );
+e.addModel('stat', model_name_base, model_name ,model_name )
 
 
 %% Estime design
 
+
+fspm = cell(0);
+
+for subj = 1 : length(e)
+    for i = 1 : numel(fileROI)
+        
+        [~,nameROI] = spm_fileparts(fileROI{i});
+        
+        regressor_name = {'Belt', 'Grip'};
+        
+        for reg = 1 : length(regressor_name)
+            
+            model_name = sprintf('PPI_%s_%s',regressor_name{reg},nameROI);
+            
+            modelDir = e(subj).mkdir('stat',model_name_base,model_name);
+            fspm{end+1,1} = fullfile(char(modelDir),'SPM.mat');
+            
+        end % reg
+        
+    end % roi
+    
+end  % subj
+
+
 j_estimate_model = job_first_level_estimate(fspm,par);
+
 
 
 %% Prepare contrasts
